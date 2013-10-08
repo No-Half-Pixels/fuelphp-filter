@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Fuelphp-filter by leemason</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Fuelphp-filter</h1>
+        <p>Implements a WordPress like filters system utilizing the event class logic</p>
+
+        <p class="view"><a href="https://github.com/leemason/fuelphp-filter">View the Project on GitHub <small>leemason/fuelphp-filter</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/leemason/fuelphp-filter/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/leemason/fuelphp-filter/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/leemason/fuelphp-filter">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="filter" class="anchor" href="#filter"><span class="octicon octicon-link"></span></a>Filter</h1>
+
+<p>WordPress like filter system for FuelPHP utilizing the core Event class.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<h3>
+<a name="using-oil" class="anchor" href="#using-oil"><span class="octicon octicon-link"></span></a>Using oil</h3>
+
+<ol>
+<li>cd to your fuel project's root</li>
+<li>Run <code>php oil package install filter</code>
+</li>
+<li>Optionally edit fuel/packages/filter/config/filter.php (this file allows you to add filters from the config file, but use the package where and when you want)</li>
+<li>Add 'filter' to the 'always_load/packages' array in app/config/config.php (or call <code>Fuel::add_package('filter')</code> whenever you want to use it).</li>
+<li>Enjoy :)</li>
+</ol><h3>
+<a name="manual-may-be-more-up-to-date" class="anchor" href="#manual-may-be-more-up-to-date"><span class="octicon octicon-link"></span></a>Manual (may be more up-to-date)</h3>
+
+<ol>
+<li>Clone (<code>git clone git://github.com/leemason/fuelphp-filter</code>) / <a href="https://github.com/leemason/fuelphp-filter/zipball/master">download</a>
+</li>
+<li>Stick in fuel/packages/ (or any custom package location you have setup)</li>
+<li>Optionally edit fuel/packages/filter/config/filter.php (this file allows you to add filters from the config file, but use the package where and when you want)</li>
+<li>Add 'filter' to the 'always_load/packages' array in app/config/config.php (or call <code>Fuel::add_package('filter')</code> whenever you want to use it).</li>
+<li>Enjoy :)</li>
+</ol><p>If you don't want to change the config file in <code>fuel/packages/filter/config/filter.php</code>, you can create your own config file in <code>fuel/app/config/filter.php</code>.
+You can either copy the entirely of the original config file, or just override the keys as you like.
+The magic of Fuel's <code>Config</code> class takes care of the rest.</p>
+
+<h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Filter is a WordPress like filter system for managing vars. It boasts the following features:</p>
+
+<ul>
+<li>Custom instances can be created.</li>
+<li>Passed values can be anything sensible.</li>
+<li>Filters can be added/removed.</li>
+<li>Filters are used in the order they are added (the opposite of the core Event class, but of course can be overwritten when triggering).</li>
+</ul><h2>
+<a name="basic-usage" class="anchor" href="#basic-usage"><span class="octicon octicon-link"></span></a>Basic usage</h2>
+
+<p>Filter works just like the core Event class, with 2 subtle differences:</p>
+
+<ol>
+<li>Filters are run in the order they are added*</li>
+<li>
+<code>phpFilter::trigger()</code> will return the result from the hooked functions (or closures).</li>
+</ol><ul>
+<li>This can be "reversed" just like the core Event class to run the filters in reverse order.</li>
+</ul><p><strong>IMPORTANT</strong> All methods sent the filter event should return its data.</p>
+
+<p>For full reference please see the Event class docs here: <a href="http://fuelphp.com/docs/classes/event.html">http://fuelphp.com/docs/classes/event.html</a></p>
+
+<p>Registering filter methods is easy, they can be closures, or callbacks just like the core Event class:</p>
+
+<div class="highlight highlight-php"><pre><span class="nx">Filter</span><span class="o">::</span><span class="na">register</span><span class="p">(</span><span class="s1">'filtername'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$data</span><span class="p">){</span>
+    <span class="c1">//do something here</span>
+    <span class="nv">$data</span><span class="p">[</span><span class="s1">'filter1'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'somedata'</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nv">$data</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">Filter</span><span class="o">::</span><span class="na">register</span><span class="p">(</span><span class="s1">'filtername'</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="nv">$data</span><span class="p">){</span>
+    <span class="c1">//do something else here</span>
+    <span class="c1">//maybe unset a result set above?</span>
+    <span class="nb">unset</span><span class="p">(</span><span class="nv">$data</span><span class="p">[</span><span class="s1">'filter1'</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="nv">$data</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Triggering is again the same as the core Event, you can pass any data:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$result</span> <span class="o">=</span> <span class="nx">Filter</span><span class="o">::</span><span class="na">trigger</span><span class="p">(</span><span class="nv">$filtername</span><span class="p">,</span> <span class="nv">$data</span><span class="p">,</span> <span class="nv">$reverse</span><span class="p">);</span>
+
+<span class="c1">//result is an array</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nx">Filter</span><span class="o">::</span><span class="na">trigger</span><span class="p">(</span><span class="s1">'filtername'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">'some'</span> <span class="o">=&gt;</span> <span class="s1">'data'</span><span class="p">));</span>
+
+<span class="c1">//result is a string</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nx">Filter</span><span class="o">::</span><span class="na">trigger</span><span class="p">(</span><span class="s1">'filtername'</span><span class="p">,</span> <span class="s1">'this is a string being passed and reversed too!'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="thanks" class="anchor" href="#thanks"><span class="octicon octicon-link"></span></a>Thanks</h2>
+
+<p>The following people have helped Casset become what it is, so thank you!</p>
+
+<ul>
+<li><a href="https://fuelphp.com">FuelPHP</a></li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>If you've got any issues/complaints/suggestions, please tell me and I'll do my best!</p>
+
+<p>Pull requests are also gladly accepted.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/leemason">leemason</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
